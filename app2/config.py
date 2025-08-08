@@ -1,12 +1,13 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from pymongo import MongoClient
+# Configurações de banco
 
-DATABASE_URL = "sqlite:///app2/banco_sql.db"
-engine = create_engine(DATABASE_URL, echo=False)
-SessionLocal = sessionmaker(bind=engine)
+# SQLite para testes locais
+#SQLALCHEMY_DATABASE_URI = "sqlite:///db.sqlite"
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-MONGO_URL = "mongodb://localhost:27017"
-mongo_client = MongoClient(MONGO_URL)
-mongo_db = mongo_client["app2_analytics"]
-mongo_consolidados = mongo_db["dashboard"]
+# Versão MySQL:
+SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root@localhost:3306/banco_teste"
+
+# Config MongoDB
+MONGO_URI = "mongodb://localhost:27017"
+MONGO_DB = "testing"
+MONGO_COLLECTION_DASHBOARD = "client"

@@ -1,24 +1,42 @@
-from config import SessionLocal
-from models_sql import Cliente
+from models_sql import db, Cliente
+from datetime import datetime
 
-def criar_cliente(nome, email):
-    session = SessionLocal()
-    cliente = Cliente(nome=nome, email=email)
-    session.add(cliente)
-    session.commit()
-    session.refresh(cliente)
-    session.close()
-    return cliente.to_dict()
+def criar_cliente(nome, email, cpf, data_nascimento):
+    cliente = Cliente(
+        nome=nome,
+        email=email,
+        cpf=cpf,
+        data_nascimento=datetime.strptime(data_nascimento, "%Y-%m-%d").date()
+    )
+    db.session.add(cliente)
+    db.session.commit()
+    return cliente
 
 def listar_clientes():
-    session = SessionLocal()
-    clientes = session.query(Cliente).all()
-    resultado = [c.to_dict() for c in clientes]
-    session.close()
-    return resultado
+    return Cliente.query.all()
 
-def contar_clientes():
-    session = SessionLocal()
-    total = session.query(Cliente).count()
-    session.close()
-    return total
+def obter_cliente(cliente_id):
+    return Cliente.query.get(cliente_id)
+
+def atualizar_cliente(cliente_id, nome=None, email=None, cpf=None, data_nascimento=None):
+    cliente = Cliente.query.get(cliente_id)
+    if not cliente:
+        return None
+    if nome:
+        cliente.nome = nome
+    if email:
+        cliente.email = email
+    if cpf:
+        cliente.cpf = cpf
+    if data_nascimento:
+        cliente.data_nascimento = datetime.strptime(data_nascimento, "%Y-%m-%d").date()
+    db.session.commit()
+    return cliente
+
+def deletar_cliente(cliente_id):
+    cliente = Cliente.query.get(cliente_id)
+    if not cliente:
+        return None
+    db.session.delete(cliente)
+    db.session.commit()
+    return cliente
