@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify
-from models_sql import db, Cliente
-from sql_service import criar_cliente, listar_clientes, obter_cliente, atualizar_cliente, deletar_cliente
+from sqlalchemy.orm import joinedload
+
+from app2 import sql_service
+from models_sql import db, Cliente, Venda
+from sql_service import criar_cliente, listar_clientes, obter_cliente, atualizar_cliente, deletar_cliente, criar_produto, listar_produtos, atualizar_produto, deletar_produto,criar_venda, listar_vendas
 from nosql_service import registrar_dashboard_total, obter_dashboard_total
 from config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
 
@@ -88,6 +91,66 @@ def deletar_cliente_route(cliente_id):
     registrar_dashboard_total(total_clientes)
 
     return jsonify({"mensagem": "Cliente deletado com sucesso"})
+
+# Produtos
+
+@app.route("/produtos", methods=["GET"])
+def get_produtos():
+    produtos = sql_service.listar_produtos()
+    return jsonify([{"id": p.id, "nome": p.nome, "preco": p.preco, "estoque": p.estoque} for p in produtos])
+
+@app.route("/produtos", methods=["POST"])
+def post_produto():
+    data = request.json
+    produto = sql_service.criar_produto(data["nome"], data["preco"], data["estoque"])
+    return jsonify({"id": produto.id}), 201
+
+
+#  VENDAS -----------------
+
+@app.route("/vendas", methods=["GET"])
+def listar_vendas_route():
+    vendas = Venda.query.options(
+        joinedload(Venda.cliente),
+        joinedload(Venda.produto)
+    ).all()
+
+    result = []
+    for v in vendas:
+        result.append({
+            "id": v.id,
+            "quantidade": v.quantidade,
+            "data_venda": v.data_venda.isoformat(),
+            "cliente": v.cliente.nome if v.cliente else None,
+            "produto": v.produto.nome if v.produto else None,
+        })
+
+    return jsonify(result)
+
+@app.route("/vendas", methods=["POST"])
+def post_venda():
+    data = request.json
+    venda = sql_service.criar_venda(data["cliente_id"], data["produto_id"], data["quantidade"])
+    if not venda:
+        return jsonify({"erro": "Produto inexistente ou estoque insuficiente"}), 400
+    return jsonify({"id": venda.id}), 201
+
+# MongoDB - Relatórios
+
+@app.route("/dashboard/total_clientes", methods=["GET"])
+def dashboard_total_clientes():
+    total = obter_total_clientes()
+    return jsonify({"total_clientes": total})
+
+@app.route("/dashboard/total_vendas", methods=["GET"])
+def dashboard_total_vendas():
+    total = obter_total_vendas()
+    return jsonify({"total_vendas": total})
+
+@app.route("/dashboard/faturamento", methods=["GET"])
+def dashboard_faturamento():
+    total = obter_faturamento_total()
+    return jsonify({"faturamento_total": total})
 
 @app.route("/dashboard/total_clientes", methods=["GET"])
 def dashboard_total():

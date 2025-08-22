@@ -1,6 +1,89 @@
-POST http://127.0.0.1:5000/clientes
+# POST /clientes
+
+http://localhost:5000/clientes
 Content-Type: application/json
+
 {
-    "nome": "Ana",
-    "email": "ana@email.com"
+  "nome": "João da Silva",
+  "email": "joao@email.com",
+  "cpf": "12345678901",
+  "data_nascimento": "1990-05-20"
 }
+
+# GET /clientes
+
+http://localhost:5000/clientes
+
+# GET /clientes/{id} - cliente específico
+
+http://localhost:5000/clientes/1
+
+# PUT /clientes/{id} -- Atualiza cliente:
+
+http://localhost:5000/clientes/1
+Content-Type: application/json
+
+{
+  "nome": "João Silva Atualizado",
+  "email": "joao.silva@email.com",
+  "cpf": "12345678901",
+  "data_nascimento": "1990-05-21"
+}
+
+# DELETE /clientes/{id} -- Remove cliente:
+
+http://localhost:5000/clientes/1
+
+# POST /produtos
+http://localhost:5000/produtos
+Content-Type: application/json
+
+{
+  "nome": "Notebook Dell",
+  "preco": 4500.00,
+  "estoque": 10
+}
+
+# GET /produtos
+
+http://localhost:5000/produtos
+
+# PUT /produtos/{id}
+
+http://localhost:5000/produtos/1
+Content-Type: application/json
+
+{
+  "nome": "Notebook Dell Inspiron",
+  "preco": 4800.00,
+  "estoque": 8
+}
+
+# DELETE /produtos/{id}
+
+http://localhost:5000/produtos/1
+
+# POST /vendas -- cada venda deve estar associada a um cliente e a um ou mais produtos.
+
+http://localhost:5000/vendas
+Content-Type: application/json
+
+{
+  "cliente_id": 1,
+  "produto_id": 1,
+  "quantidade": 2
+}
+
+# GET /vendas
+
+http://localhost:5000/vendas
+
+# GET /vendas/{id}
+
+http://localhost:5000/vendas/1
+
+# Testando o MongoDB (Dashboard) - Esses endpoints consultam/atualizam dados no MongoDB.
+
+# GET /dashboard/total_clientes
+http://localhost:5000/dashboard/total_clientes
+

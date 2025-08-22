@@ -14,6 +14,19 @@ except Exception as e:
     dashboard_collection = None
     mongo_connected = False
 
+def registrar_documento(collection_name, filtro, valores):
+    if mongo_connected:
+        collection = mongo_db[collection_name]
+        collection.update_one(filtro, {"$set": valores}, upsert=True)
+    else:
+        print("[MongoDB] Registro ignorado (sem conexão)")
+
+def obter_documento(collection_name, filtro):
+    if mongo_connected:
+        collection = mongo_db[collection_name]
+        return collection.find_one(filtro)
+    return None
+
 def registrar_dashboard_total(total_clientes):
     if mongo_connected:
         dashboard_collection.update_one(
