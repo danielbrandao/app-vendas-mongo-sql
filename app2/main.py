@@ -138,21 +138,6 @@ def post_venda():
 # MongoDB - Relatórios
 
 @app.route("/dashboard/total_clientes", methods=["GET"])
-def dashboard_total_clientes():
-    total = obter_total_clientes()
-    return jsonify({"total_clientes": total})
-
-@app.route("/dashboard/total_vendas", methods=["GET"])
-def dashboard_total_vendas():
-    total = obter_total_vendas()
-    return jsonify({"total_vendas": total})
-
-@app.route("/dashboard/faturamento", methods=["GET"])
-def dashboard_faturamento():
-    total = obter_faturamento_total()
-    return jsonify({"faturamento_total": total})
-
-@app.route("/dashboard/total_clientes", methods=["GET"])
 def dashboard_total():
     total = obter_dashboard_total()
     return jsonify({"total_clientes": total})
